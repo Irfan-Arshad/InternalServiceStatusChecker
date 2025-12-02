@@ -74,7 +74,7 @@ app.MapGet("/", () =>
     return Results.Ok(new
     {
         application = "Internal Service Status Checker",
-        description = "Checks internal systems and reports whether they are up or down.",
+        description = "Checks internal systems and reports whether they are up or down (DevOps Pipeline Demo).",
         healthEndpoint = "/health",
         checkEndpoint = "/check"
     });
