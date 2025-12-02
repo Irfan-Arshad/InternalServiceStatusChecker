@@ -1,0 +1,6 @@
+@InternalServiceStatusChecker_HostAddress = http://localhost:5084
+
+GET {{InternalServiceStatusChecker_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
