@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: issc-api
+  namespace: issc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: issc-api
+  template:
+    metadata:
+      labels:
+        app: issc-api
+    spec:
+      containers:
+        - name: issc-api
+          image: irfantechno/issc-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
