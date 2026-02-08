@@ -7,8 +7,11 @@ pipeline {
   }
 
   stages {
+
     stage('Checkout') {
-      steps { checkout scm }
+      steps {
+        checkout scm
+      }
     }
 
     stage('Build') {
@@ -29,19 +32,23 @@ pipeline {
       }
     }
 
-   stage('Docker Build') {
-    steps {
-      sh '''
-        export DOCKER_BUILDKIT=0
-        docker build -t ${IMAGE_LOCAL}:latest .
-        docker tag ${IMAGE_LOCAL}:latest ${IMAGE_REMOTE}:latest
-      '''
+    stage('Docker Build') {
+      steps {
+        sh '''
+          export DOCKER_BUILDKIT=0
+          docker build -t ${IMAGE_LOCAL}:latest .
+          docker tag ${IMAGE_LOCAL}:latest ${IMAGE_REMOTE}:latest
+        '''
+      }
     }
-  }
 
     stage('Docker Push') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
+        withCredentials([usernamePassword(
+          credentialsId: 'dockerhub-creds',
+          usernameVariable: 'DH_USER',
+          passwordVariable: 'DH_PASS'
+        )]) {
           sh '''
             echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin
             docker push ${IMAGE_REMOTE}:latest
@@ -50,19 +57,19 @@ pipeline {
         }
       }
     }
-  }
 
-  stage('Deploy to Kubernetes') {
-  steps {
-    sh '''
-      export KUBECONFIG=/var/lib/jenkins/.kube/config
-      kubectl create namespace issc --dry-run=client -o yaml | kubectl apply -f -
-      kubectl apply -f issc-deploy-dh.yaml
-      kubectl rollout status deployment/issc-api -n issc --timeout=180s
-      kubectl get pods -n issc -o wide
-    '''
+    stage('Deploy to Kubernetes') {
+      steps {
+        sh '''
+          export KUBECONFIG=/var/lib/jenkins/.kube/config
+          kubectl create namespace issc --dry-run=client -o yaml | kubectl apply -f -
+          kubectl apply -f issc-deploy-dh.yaml
+          kubectl rollout status deployment/issc-api -n issc --timeout=180s
+          kubectl get pods -n issc -o wide
+        '''
+      }
+    }
   }
-}
 
   post {
     always {
