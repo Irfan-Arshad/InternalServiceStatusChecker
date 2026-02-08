@@ -29,14 +29,15 @@ pipeline {
       }
     }
 
-    stage('Docker Build') {
-      steps {
-        sh '''
-          docker build -t ${IMAGE_LOCAL}:latest .
-          docker tag ${IMAGE_LOCAL}:latest ${IMAGE_REMOTE}:latest
-        '''
-      }
+   stage('Docker Build') {
+    steps {
+      sh '''
+        export DOCKER_BUILDKIT=0
+        docker build -t ${IMAGE_LOCAL}:latest .
+        docker tag ${IMAGE_LOCAL}:latest ${IMAGE_REMOTE}:latest
+      '''
     }
+  }
 
     stage('Docker Push') {
       steps {
