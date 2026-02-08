@@ -52,6 +52,18 @@ pipeline {
     }
   }
 
+  stage('Deploy to Kubernetes') {
+  steps {
+    sh '''
+      export KUBECONFIG=/var/lib/jenkins/.kube/config
+      kubectl create namespace issc --dry-run=client -o yaml | kubectl apply -f -
+      kubectl apply -f issc-deploy-dh.yaml
+      kubectl rollout status deployment/issc-api -n issc --timeout=180s
+      kubectl get pods -n issc -o wide
+    '''
+  }
+}
+
   post {
     always {
       sh 'docker images | head -n 25 || true'
