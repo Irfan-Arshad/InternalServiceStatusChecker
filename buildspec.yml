@@ -22,4 +22,4 @@ post_build:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@16.16.218.161 "kubectl apply -f ~/InternalServiceStatusChecker/issc-deploy-dh.yaml && kubectl rollout status deployment/issc-api -n issc --timeout=180s"
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@16.16.218.161 "kubectl create namespace issc --dry-run=client -o yaml | kubectl apply -f - && kubectl apply -f ~/deploy/issc-deploy-dh.yaml && kubectl rollout status deployment/issc-api -n issc --timeout=180s"
